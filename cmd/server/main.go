@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/WildCatFish/Cloud-Store-System-Golang/internal/app/handlers"
+	"github.com/Quolls/Cloud-Storage-Golang/internal/app/handlers"
 )
 
 func main() {
