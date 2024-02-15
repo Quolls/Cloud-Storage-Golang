@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/Quolls/Cloud-Storage-Golang/internal/app/models"
+	"github.com/Quolls/Cloud-Storage-Golang/internal/app/util"
 )
 
 func UploadHandler(c *gin.Context) {
@@ -23,6 +27,21 @@ func UploadHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	fileSha1, err := util.CalculateFileSha1(file)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	fileMetadata := models.FileMetadata{
+		FileSha1: fileSha1,
+		FileName: file.Filename,
+		FileSize: file.Size,
+		FilePath: path,
+		CreateAt: time.Now().String(),
+	}
+	models.UpdateFileMetadata(fileMetadata)
 
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully!", "filename": file.Filename})
 }

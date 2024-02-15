@@ -1,4 +1,4 @@
-module github.com/WildCatFish/Cloud-Store-System-Golang
+module github.com/Quolls/Cloud-Storage-Golang
 
 go 1.20
 
