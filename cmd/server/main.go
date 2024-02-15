@@ -22,7 +22,8 @@ func main() {
 	v1 := router.Group("/v1")
 	{
 		v1.POST("/file", handlers.UploadHandler)
+		v1.GET("/file/:name", handlers.DownloadHandler)
 	}
 
-	router.Run(":8080") // listen and serve on 0.0.0.0:8080
+	router.Run(":8080")
 }
