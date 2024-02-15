@@ -7,17 +7,3 @@ type FileMetadata struct {
 	FilePath string `json:"file_path"`
 	CreateAt string `json:"create_at"`
 }
-
-var fileMetadataCollections map[string]FileMetadata
-
-func init() {
-	fileMetadataCollections = make(map[string]FileMetadata)
-}
-
-func UpdateFileMetadata(metadata FileMetadata) {
-	fileMetadataCollections[metadata.FileSha1] = metadata
-}
-
-func GetFileMetadata(fileSha1 string) FileMetadata {
-	return fileMetadataCollections[fileSha1]
-}
