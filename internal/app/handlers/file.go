@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/models"
+	"github.com/Quolls/Cloud-Storage-Golang/internal/app/services"
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/util"
 )
 
@@ -41,7 +42,7 @@ func UploadHandler(c *gin.Context) {
 		FilePath: path,
 		CreateAt: time.Now().String(),
 	}
-	models.UpdateFileMetadata(fileMetadata)
+	services.UpdateFileMetadata(fileMetadata)
 
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully!", "filename": file.Filename})
 }
