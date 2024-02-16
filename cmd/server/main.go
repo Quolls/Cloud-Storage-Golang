@@ -23,6 +23,8 @@ func main() {
 	{
 		v1.POST("/file", handlers.UploadHandler)
 		v1.GET("/file/:name", handlers.DownloadHandler)
+
+		v1.GET("/file/metadata", handlers.GetFileMetadataHandler)
 	}
 
 	router.Run(":8080")

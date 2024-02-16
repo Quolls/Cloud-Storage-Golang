@@ -43,7 +43,7 @@ func UploadHandler(c *gin.Context) {
 		CreateAt: time.Now().String(),
 	}
 	services.UpdateFileMetadata(fileMetadata)
-
+	fmt.Println("File metadata:", fileMetadata)
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully!", "filename": file.Filename})
 }
 
