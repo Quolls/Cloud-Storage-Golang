@@ -10,7 +10,7 @@ import (
 
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/models"
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/services"
-	"github.com/Quolls/Cloud-Storage-Golang/internal/app/util"
+	"github.com/Quolls/Cloud-Storage-Golang/internal/util"
 )
 
 func UploadFileHandler(c *gin.Context) {
