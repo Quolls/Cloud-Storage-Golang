@@ -13,7 +13,7 @@ import (
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/util"
 )
 
-func UploadHandler(c *gin.Context) {
+func UploadFileHandler(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -43,19 +43,38 @@ func UploadHandler(c *gin.Context) {
 		CreateAt: time.Now().String(),
 	}
 	services.UpdateFileMetadata(fileMetadata)
-
+	fmt.Println("File metadata:", fileMetadata)
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully!", "filename": file.Filename})
 }
 
-func DownloadHandler(c *gin.Context) {
+func DownloadFileHandler(c *gin.Context) {
 
-	name := c.Param("name")
-	fmt.Println("Received file: ", name)
+	fileSha1 := c.Query("file_sha1")
+	fileMetadata := services.GetFileMetadata(fileSha1)
 
-	if _, err := os.Stat("./tmp/" + name); err != nil {
+	if _, err := os.Stat(fileMetadata.FilePath); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "File not found!"})
 		return
 	}
 
-	c.FileAttachment("./tmp/"+name, name)
+	c.FileAttachment(fileMetadata.FilePath, fileMetadata.FileName)
+}
+
+func DeleteFileHandler(c *gin.Context) {
+	fileSha1 := c.Query("file_sha1")
+	fileMetadata := services.GetFileMetadata(fileSha1)
+
+	if _, err := os.Stat(fileMetadata.FilePath); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "File not found!"})
+		return
+	}
+
+	err := os.Remove(fileMetadata.FilePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	services.DeleteFileMetadata(fileSha1)
+	c.JSON(http.StatusOK, gin.H{"message": "File deleted successfully!"})
 }

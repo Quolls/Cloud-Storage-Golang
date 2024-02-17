@@ -21,8 +21,12 @@ func main() {
 	router := gin.Default()
 	v1 := router.Group("/v1")
 	{
-		v1.POST("/file", handlers.UploadHandler)
-		v1.GET("/file/:name", handlers.DownloadHandler)
+		v1.POST("/file", handlers.UploadFileHandler)
+		v1.GET("/file", handlers.DownloadFileHandler)
+		v1.DELETE("/file", handlers.DeleteFileHandler)
+
+		v1.GET("/file/metadata", handlers.GetFileMetadataHandler)
+		v1.PUT("/file/metadata", handlers.UpdateFileMetadataHandler)
 	}
 
 	router.Run(":8080")

@@ -17,3 +17,11 @@ func UpdateFileMetadata(metadata models.FileMetadata) {
 func GetFileMetadata(fileSha1 string) models.FileMetadata {
 	return fileMetadataCollections[fileSha1]
 }
+
+func GetFileMetadataByRange(timeRange string) map[string]models.FileMetadata {
+	return fileMetadataCollections
+}
+
+func DeleteFileMetadata(fileSha1 string) {
+	delete(fileMetadataCollections, fileSha1)
+}
