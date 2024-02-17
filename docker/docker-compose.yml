@@ -1,0 +1,10 @@
+
+services:
+  mysql:
+    image: mysql:8.3.0
+    container_name: cloud-storage-system-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+    restart: always
