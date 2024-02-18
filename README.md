@@ -4,7 +4,7 @@ A distributed cloud storage service implemented in Golang
 
 ## Progress：
 * [x] Simple file upload service
-* [x] Storing file metadata on MySQL or Mongo(working on)
+* [x] Storing file metadata on MySQL or Mongo
 * [ ] Account system, register/login/query user or file data
 * [ ] File operation interface based on accounts
 * [ ] Instant file upload feature

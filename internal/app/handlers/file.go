@@ -43,7 +43,10 @@ func UploadFileHandler(c *gin.Context) {
 		CreateAt: time.Now().String(),
 	}
 	services.UpdateFileMetadata(fileMetadata)
-	fmt.Println("File metadata:", fileMetadata)
+	if !services.UpdateFileMetadataToDB(fileMetadata) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file metadata to database!"})
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully!", "filename": file.Filename})
 }
 
