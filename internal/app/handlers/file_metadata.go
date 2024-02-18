@@ -18,9 +18,9 @@ func GetFileMetadataHandler(c *gin.Context) {
 		return
 	}
 
-	fileMetadata := services.GetFileMetadata(fileSha1)
-	if fileMetadata.FileSha1 == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "File not found!"})
+	fileMetadata, err := services.GetFileMetadataFromDB(fileSha1)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -41,12 +41,13 @@ func UpdateFileMetadataHandler(c *gin.Context) {
 	}
 	curFilemetadata.FileName = newFileName
 
-	services.UpdateFileMetadata(curFilemetadata)
+	// services.UpdateFileMetadata(curFilemetadata)
+	services.UpdateFileMetadataToDB(curFilemetadata)
 	c.JSON(http.StatusOK, curFilemetadata)
 }
 
 func DeleteFileMetadataHandler(c *gin.Context) {
-	fileSha1 := c.Params.ByName("file_sha1")
+	fileSha1 := c.Query("file_sha1")
 
 	curFilemetadata := services.GetFileMetadata(fileSha1)
 	if curFilemetadata.FileSha1 == "" {
