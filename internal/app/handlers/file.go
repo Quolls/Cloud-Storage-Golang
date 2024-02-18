@@ -42,9 +42,9 @@ func UploadFileHandler(c *gin.Context) {
 		FilePath: path,
 		CreateAt: time.Now().String(),
 	}
-	services.UpdateFileMetadata(fileMetadata)
-	if !services.UpdateFileMetadataToDB(fileMetadata) {
+	if !services.InsertFileMetadataToDB(fileMetadata) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file metadata to database!"})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully!", "filename": file.Filename})
@@ -53,7 +53,11 @@ func UploadFileHandler(c *gin.Context) {
 func DownloadFileHandler(c *gin.Context) {
 
 	fileSha1 := c.Query("file_sha1")
-	fileMetadata := services.GetFileMetadata(fileSha1)
+	fileMetadata, err := services.GetFileMetadataFromDB(fileSha1)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	if _, err := os.Stat(fileMetadata.FilePath); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "File not found!"})
@@ -65,19 +69,25 @@ func DownloadFileHandler(c *gin.Context) {
 
 func DeleteFileHandler(c *gin.Context) {
 	fileSha1 := c.Query("file_sha1")
-	fileMetadata := services.GetFileMetadata(fileSha1)
+	fileMetadata, err := services.GetFileMetadataFromDB(fileSha1)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	if _, err := os.Stat(fileMetadata.FilePath); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "File not found!"})
 		return
 	}
 
-	err := os.Remove(fileMetadata.FilePath)
+	err = os.Remove(fileMetadata.FilePath)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	services.DeleteFileMetadata(fileSha1)
+	if !services.DeleteFileMetadataFromDB(fileSha1) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file metadata from database!"})
+	}
 	c.JSON(http.StatusOK, gin.H{"message": "File deleted successfully!"})
 }
