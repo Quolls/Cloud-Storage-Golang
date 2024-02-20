@@ -10,10 +10,10 @@ import (
 
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/models"
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/services"
-	"github.com/Quolls/Cloud-Storage-Golang/internal/app/util"
+	"github.com/Quolls/Cloud-Storage-Golang/internal/util"
 )
 
-func UploadHandler(c *gin.Context) {
+func UploadFileHandler(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -42,20 +42,52 @@ func UploadHandler(c *gin.Context) {
 		FilePath: path,
 		CreateAt: time.Now().String(),
 	}
-	services.UpdateFileMetadata(fileMetadata)
+	if !services.InsertFileMetadataToDB(fileMetadata) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file metadata to database!"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "File uploaded successfully!", "filename": file.Filename})
 }
 
-func DownloadHandler(c *gin.Context) {
+func DownloadFileHandler(c *gin.Context) {
 
-	name := c.Param("name")
-	fmt.Println("Received file: ", name)
+	fileSha1 := c.Query("file_sha1")
+	fileMetadata, err := services.GetFileMetadataFromDB(fileSha1)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-	if _, err := os.Stat("./tmp/" + name); err != nil {
+	if _, err := os.Stat(fileMetadata.FilePath); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "File not found!"})
 		return
 	}
 
-	c.FileAttachment("./tmp/"+name, name)
+	c.FileAttachment(fileMetadata.FilePath, fileMetadata.FileName)
+}
+
+func DeleteFileHandler(c *gin.Context) {
+	fileSha1 := c.Query("file_sha1")
+	fileMetadata, err := services.GetFileMetadataFromDB(fileSha1)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if _, err := os.Stat(fileMetadata.FilePath); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "File not found!"})
+		return
+	}
+
+	err = os.Remove(fileMetadata.FilePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !services.DeleteFileMetadataFromDB(fileSha1) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file metadata from database!"})
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "File deleted successfully!"})
 }
