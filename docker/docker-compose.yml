@@ -5,6 +5,7 @@ services:
     container_name: cloud-storage-system-mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_TCP_PORT: 3306
     ports:
       - "3306:3306"
     restart: always
