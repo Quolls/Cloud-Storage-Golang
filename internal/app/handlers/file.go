@@ -14,6 +14,7 @@ import (
 )
 
 func UploadFileHandler(c *gin.Context) {
+
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -42,6 +43,7 @@ func UploadFileHandler(c *gin.Context) {
 		FilePath: path,
 		CreateAt: time.Now().String(),
 	}
+
 	if !services.InsertFileMetadataToDB(fileMetadata) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file metadata to database!"})
 		return

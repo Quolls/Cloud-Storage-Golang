@@ -48,10 +48,10 @@ func GetUser(username, password string) (*models.User, error) {
 		&user.EmailValidated, &user.PhoneValidated, &user.SignUpAt, &user.LastActive, &user.Profile, &user.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println("User with username:%s is not found\n", username)
+			fmt.Printf("User with username: %s is not found\n", username)
 			return &models.User{}, nil
 		} else {
-			fmt.Println("Failed to execute statement, err:" + err.Error())
+			fmt.Printf("Failed to execute statement, err: %s\n", err.Error())
 			return &models.User{}, err
 		}
 	}
