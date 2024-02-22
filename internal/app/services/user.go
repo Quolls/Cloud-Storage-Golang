@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
+
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/models"
 	"github.com/Quolls/Cloud-Storage-Golang/internal/repository"
 	"github.com/Quolls/Cloud-Storage-Golang/internal/util"
@@ -21,7 +23,11 @@ func SignInUser(user models.User) bool {
 		return false
 	}
 
-	token := GenerateToken(user)
+	token, err := GenerateToken(user)
+	if err != nil {
+		fmt.Println("Error generating token:", err)
+		return false
+	}
 	if !repository.UpdateUserToken(user, token) {
 		fmt.Println("Failed to update user token!")
 		return false
@@ -30,8 +36,21 @@ func SignInUser(user models.User) bool {
 	return true
 }
 
-func GenerateToken(user models.User) string {
-	fmt.Println(time.Now().Unix())
+func GenerateToken(user models.User) (string, error) {
+	expireationTime := time.Now().Add(1 * time.Hour)
+	fmt.Println(expireationTime)
 
-	return "token:123456"
+	claims := &jwt.StandardClaims{
+		ExpiresAt: expireationTime.Unix(),
+		Issuer:    "Quolls",
+		Subject:   user.Username,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte("secret"))
+	if err != nil {
+		return "", err
+	}
+	fmt.Println(tokenString)
+	return tokenString, nil
 }
