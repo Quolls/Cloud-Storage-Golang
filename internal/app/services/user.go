@@ -2,6 +2,7 @@ package services
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Quolls/Cloud-Storage-Golang/internal/app/models"
 	"github.com/Quolls/Cloud-Storage-Golang/internal/repository"
@@ -20,5 +21,17 @@ func SignInUser(user models.User) bool {
 		return false
 	}
 
+	token := GenerateToken(user)
+	if !repository.UpdateUserToken(user, token) {
+		fmt.Println("Failed to update user token!")
+		return false
+	}
+
 	return true
+}
+
+func GenerateToken(user models.User) string {
+	fmt.Println(time.Now().Unix())
+
+	return "token:123456"
 }
