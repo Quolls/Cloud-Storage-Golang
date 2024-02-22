@@ -3,6 +3,7 @@ package util
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"fmt"
 	"io"
 	"mime/multipart"
 
@@ -34,5 +35,15 @@ func EncodeString(input string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(hash), nil
+}
+
+func ComparePasswords(hashedPassword, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	if err != nil {
+		fmt.Println("Error comparing passwords: ", err)
+		return false
+	}
+	return true
 }

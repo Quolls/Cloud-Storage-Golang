@@ -34,7 +34,9 @@ func InsertUser(username, password string) bool {
 }
 
 func GetUser(username, password string) (*models.User, error) {
-	sqlStr := "SELECT * FROM user WHERE user_name = ? LIMIT 1"
+	sqlStr := "SELECT user_name, user_pwd, email, phone, email_validated, phone_validated, " +
+		" signup_at, last_active, profile, status " +
+		" FROM user WHERE user_name = ? LIMIT 1"
 
 	statement, err := db.GetDb().Prepare(sqlStr)
 	if err != nil {
@@ -55,6 +57,7 @@ func GetUser(username, password string) (*models.User, error) {
 			return &models.User{}, err
 		}
 	}
+
 	return &user, nil
 }
 
