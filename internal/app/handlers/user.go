@@ -54,5 +54,8 @@ func SignInUserHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to sign in user!"})
 		return
 	}
+
+	// TODO: Generate JWT token and send it back to the client
+
 	c.JSON(http.StatusOK, gin.H{"message": "User signed in successfully!"})
 }

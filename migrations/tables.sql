@@ -30,3 +30,12 @@ CREATE TABLE `user` (
   UNIQUE KEY `idx_username` (`user_name`),
   KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ----------------------------
+CREATE TABLE `token` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(64) NOT NULL DEFAULT '',
+  `user_token` char(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_username` (`user_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
