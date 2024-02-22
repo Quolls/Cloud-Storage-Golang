@@ -29,6 +29,7 @@ func main() {
 		v1.PUT("/file/metadata", handlers.UpdateFileMetadataHandler)
 
 		v1.POST("/user", handlers.SignUpUserHandler)
+		v1.POST("/user/login", handlers.SignInUserHandler)
 	}
 
 	router.Run(":8080")

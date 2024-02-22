@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,8 @@ func SignUpUserHandler(c *gin.Context) {
 	}
 
 	econdedPassword, err := util.EncodeString(password)
+	fmt.Println(econdedPassword)
+	fmt.Println(util.ComparePasswords(econdedPassword, password))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode password!"})
 	}
@@ -37,22 +40,14 @@ func SignUpUserHandler(c *gin.Context) {
 }
 
 func SignInUserHandler(c *gin.Context) {
-	username := c.PostForm("user_name")
-	password := c.PostForm("user_pwd")
+	user := models.User{
+		Username: c.PostForm("user_name"),
+		Password: c.PostForm("user_pwd"),
+	}
 
-	if len(username) < 3 || len(password) < 6 {
+	if len(user.Username) < 3 || len(user.Password) < 6 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "username must be at least 3 characters and password must be at least 6 characters!"})
 		return
-	}
-
-	econdedPassword, err := util.EncodeString(password)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to encode password!"})
-	}
-
-	user := models.User{
-		Username: username,
-		Password: econdedPassword,
 	}
 
 	if !services.SignInUser(user) {
